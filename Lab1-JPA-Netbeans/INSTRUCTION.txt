@@ -1,0 +1,28 @@
+1.  The project assumes that db database with db_user, db_pass credentials is available.
+    To create it the following commands should be used:
+    a) 1st command line window: 
+        - cd <mysql_directory>\bin\
+        - mysqld.exe
+    b) 2nd command line window:
+        - cd <mysql_directory>\bin\
+        - mysql.exe -u root
+    c) withing mysql client window:
+        - create database db;
+        - create user 'db_user'@'localhost' identified by 'db_pass';
+        - grant all on db.* to 'db_user'@'localhost';
+        - exit
+
+2.  In persistence.xml file add your entity classes using Add Class... button
+    in Design view, or in Source view add for each entity
+    <class>fully.qualified.name.of.the.Class</class>
+
+3.  Create package structure including:
+    a) pl.polsl.lastname.firstname
+        - controller class containing only main method and nothing else
+    b) pl.polsl.lastname.firstname.model
+        - entity classes
+        - database manager class(es) performing CRUD operations
+    c) pl.polsl.lastname.firstname.view
+        - view class reading data from user and/or printing data on screen
+
+Keep the menu to the minimum, JPA part is the most important part of the project.
