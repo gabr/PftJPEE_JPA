@@ -123,12 +123,24 @@ public class DatabaseManager<T> {
         return query.getResultList();
     }
     
+    /**
+     * Returns all authors with given name
+     * @param <Author> used only for author entity
+     * @param name the author name
+     * @return the list of authors with given name
+     */
     public <Author> List<Author> getByName(String name) {
         Query query = entityManager.createNamedQuery("Author.findByName");
         query.setParameter("name", name);
         return query.getResultList();
     }
     
+    /**
+     * Returns al books with given title
+     * @param <Book> used only for book entity
+     * @param title the book title
+     * @return the list of books with given title
+     */
     public <Book> List<Book> getByTitle(String title) {
         Query query = entityManager.createNamedQuery("Book.findByTitle");
         query.setParameter("title", title);
