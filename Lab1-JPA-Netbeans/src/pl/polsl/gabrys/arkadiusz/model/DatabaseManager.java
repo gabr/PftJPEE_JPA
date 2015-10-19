@@ -1,8 +1,10 @@
 package pl.polsl.gabrys.arkadiusz.model;
 
+import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import javax.persistence.Query;
 
 /**
  * Provides CRUD implementation for entities
@@ -108,5 +110,16 @@ public class DatabaseManager<T> {
         
         entityManager.remove(t);
         return true;
+    }
+    
+    /**
+     * Returns all entities of given entity
+     * @param objectClass the entity class
+     * @return the list of with all entities
+     */
+    public List<T> getAll(Class<T> objectClass) {
+        String namedQuery = objectClass.getName() + ".findAll";
+        Query query = entityManager.createNamedQuery(namedQuery);
+        return query.getResultList();
     }
 }
