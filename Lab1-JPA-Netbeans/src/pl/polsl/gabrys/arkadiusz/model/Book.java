@@ -3,10 +3,14 @@ package pl.polsl.gabrys.arkadiusz.model;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
@@ -16,6 +20,12 @@ import javax.persistence.TemporalType;
  * @version 1.0
  */
 @Entity
+@NamedQueries({
+  @NamedQuery(name="Book.findAll",
+              query="SELECT e FROM Book e"),
+  @NamedQuery(name="Book.findByTitle",
+              query="SELECT e FROM Book e WHERE e.title = :title")
+})
 public class Book implements Serializable {
     
     /**
@@ -40,6 +50,12 @@ public class Book implements Serializable {
      */
     @Temporal(TemporalType.DATE)
     private Date releaseDate;
+    
+    /**
+     * Author of the book
+     */
+    @ManyToOne(cascade = CascadeType.ALL)
+    private Author author;
 
     public Long getId() {
         return id;

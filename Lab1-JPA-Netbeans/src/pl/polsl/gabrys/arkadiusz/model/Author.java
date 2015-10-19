@@ -8,6 +8,8 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 
 /**
@@ -16,6 +18,12 @@ import javax.persistence.OneToMany;
  * @version 1.0
  */
 @Entity
+@NamedQueries({
+  @NamedQuery(name="Author.findAll",
+              query="SELECT e FROM Author e"),
+  @NamedQuery(name="Author.findByName",
+              query="SELECT e FROM Author e WHERE e.name = :name")
+})
 public class Author implements Serializable {
     
     /**
