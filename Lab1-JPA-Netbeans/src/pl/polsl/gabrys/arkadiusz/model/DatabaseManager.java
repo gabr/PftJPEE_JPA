@@ -1,8 +1,8 @@
 package pl.polsl.gabrys.arkadiusz.model;
 
 /**
- * Class provides CRUD implementation for entities
- * @author arkad_000
+ * Provides CRUD implementation for entities
+ * @author Arkadiusz Gabryś
  * @version 1.0
  */
 public class DatabaseManager {
