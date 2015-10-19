@@ -3,6 +3,7 @@ package pl.polsl.gabrys.arkadiusz.model;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -30,17 +31,20 @@ public class Author implements Serializable {
      * Author unique id
      */
     @Id
+    @Column(nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
     /**
      * Author name
      */
+    @Column(nullable = false)
     private String name;
     
     /**
      * Author last name
      */
+    @Column(nullable = false)
     private String lastName;
     
     /**

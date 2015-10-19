@@ -4,10 +4,12 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -32,28 +34,33 @@ public class Book implements Serializable {
      * Book unique id
      */
     @Id
+    @Column(nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
     /**
      * Book title
      */
+    @Column(nullable = false)
     private String title;
     
     /**
      * Number of pages in book
      */
+    @Column(nullable = false)
     private Long pages;
     
     /**
      * Book release date
      */
+    @Column(nullable = false)
     @Temporal(TemporalType.DATE)
     private Date releaseDate;
     
     /**
      * Author of the book
      */
+    @JoinColumn(nullable = false)
     @ManyToOne(cascade = CascadeType.ALL)
     private Author author;
 
