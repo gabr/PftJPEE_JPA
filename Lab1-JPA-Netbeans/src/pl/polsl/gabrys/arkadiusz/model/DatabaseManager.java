@@ -122,4 +122,16 @@ public class DatabaseManager<T> {
         Query query = entityManager.createNamedQuery(namedQuery);
         return query.getResultList();
     }
+    
+    public <Author> List<Author> getByName(String name) {
+        Query query = entityManager.createNamedQuery("Author.findByName");
+        query.setParameter("name", name);
+        return query.getResultList();
+    }
+    
+    public <Book> List<Book> getByTitle(String title) {
+        Query query = entityManager.createNamedQuery("Book.findByTitle");
+        query.setParameter("title", title);
+        return query.getResultList();
+    }
 }
