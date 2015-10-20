@@ -1,5 +1,5 @@
 /**
- * Contains View class which manages interaction with the user
+ * Contains View class which provides CLI and interactive console interface
  *
  * @since 1.0
  * @author Arkadiusz Gabryś
