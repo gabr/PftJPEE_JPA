@@ -64,6 +64,42 @@ public class Book implements Serializable {
     @ManyToOne(cascade = CascadeType.ALL)
     private Author author;
 
+    /**
+     * Initializes instance with empty fields
+     */
+    public Book() {
+        this(null);
+    }
+    
+    /**
+     * Initializes instance with given parameter
+     * @param title the book title
+     */
+    public Book(String title) {
+        this(title, null);
+    }
+    
+    /**
+     * Initializes instance with given parameters
+     * @param title the book title
+     * @param releaseDate the book release date
+     */
+    public Book(String title, Date releaseDate) {
+        this(title, releaseDate, null);
+    }
+    
+    /**
+     * Initializes instance with given parameter
+     * @param title the book title
+     * @param releaseDate the book release date
+     * @param author the book author
+     */
+    public Book(String title, Date releaseDate, Author author) {
+        if (title == null) {
+            // TODO:
+        }
+    }
+
     public Long getId() {
         return id;
     }

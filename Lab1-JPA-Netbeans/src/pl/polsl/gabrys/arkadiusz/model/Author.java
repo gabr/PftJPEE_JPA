@@ -1,6 +1,7 @@
 package pl.polsl.gabrys.arkadiusz.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import javax.persistence.Column;
@@ -52,6 +53,39 @@ public class Author implements Serializable {
      */
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "author")
     private List<Book> books;
+    
+    /**
+     * Initializes instance with empty fields
+     */
+    public Author() {
+        this("", "");
+    }
+    
+    /**
+     * Initializes instance with given parameters
+     * @param name the author name
+     * @param lastName the author last name
+     */
+    public Author(String name, String lastName) {
+        this(name, lastName, null);
+    }
+    
+    /**
+     * Initializes instance with given parameters
+     * @param name the author name
+     * @param lastName the author last name
+     * @param books the author books list
+     */
+    public Author(String name, String lastName, List<Book> books) {
+        this.name = name;
+        this.lastName = lastName;
+        
+        if (books == null) {
+            this.books = new ArrayList<Book>();
+        } else {
+            this.books = books;
+        }
+    }
 
     public Long getId() {
         return id;
