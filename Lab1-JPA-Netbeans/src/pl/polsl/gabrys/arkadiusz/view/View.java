@@ -88,6 +88,33 @@ public class View {
             + "    java -jar Lab1-JPA.jar -find Book All\n";
     
     /**
+     * Help message for merge option
+     */
+    private final String HELP_MERGE = "merge\n"
+            + "usage:\n"
+            + "       merge Author <Id> <Name> <LastName>\n"
+            + "       merge Book   <Id> <Title> <Date> <AuthorId>\n"
+            + "\n"
+            + "Changes values for entity with given id.\n"
+            + "\n"
+            + "Examples:\n"
+            + "    java -jar Lab1-JPA.jar -m 1 Author Stephen King\n"
+            + "    java -jar Lab1-JPA.jar -merge 2 Book \"Drawing of the Three\" 1987 1\n";
+    
+    /**
+     * Help message for remove option
+     */
+    private final String HELP_REMOVE = "remove\n"
+            + "usage:\n"
+            + "       remove Author <Id>\n"
+            + "       remove Book   <Id>\n"
+            + "\n"
+            + "Removes entity with given id.\n"
+            + "\n"
+            + "Examples:\n"
+            + "    java -jar Lab1-JPA.jar -r 1\n"
+            + "    java -jar Lab1-JPA.jar -remove 2\n";
+    /**
      * Options structure for parsing
      */
     private Options options;
@@ -241,10 +268,12 @@ public class View {
                     
                 case "m":
                 case "merge":
+                    System.out.println(HELP_MERGE);
                     break;
                     
                 case "r":
                 case "remove":
+                    System.out.println(HELP_REMOVE);
                     break;
                     
                 default:
