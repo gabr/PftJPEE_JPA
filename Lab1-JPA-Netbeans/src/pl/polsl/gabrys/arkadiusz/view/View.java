@@ -32,6 +32,22 @@ public class View {
     public final Integer ERROR_CODE_UNKNOWN_ERROR = 2;
     
     /**
+     * Help message for help option
+     */
+    private final String HELP_HELP = "help\n"
+            + "usage: help [option]\n"
+            + "\n"
+            + "Without any option shows main help message.\n"
+            + "With specified option shows help message for\n"
+            + "specified option.\n"
+            + "\n"
+            + "Examples:\n"
+            + "    java -jar Lab1-JPA.jar -h\n"
+            + "    java -jar Lab1-JPA.jar -help\n"
+            + "    java -jar Lab1-JPA.jar -h f\n"
+            + "    java -jar Lab1-JPA.jar -h find\n";
+    
+    /**
      * Options structure for parsing
      */
     private Options options;
@@ -165,6 +181,7 @@ public class View {
             {
                 case "h":
                 case "help":
+                    System.out.println(HELP_HELP);
                     break;
                     
                 case "i":
