@@ -159,7 +159,10 @@ public class Book implements Serializable {
      */
     @Override
     public String toString() {
-        return String.format("%d; ", this.getId());
+        return String.format("%d; %s; %d; %s; %d",
+                this.getId(), this.getTitle(), this.getPages(),
+                this.getReleaseDate() != null ? this.getReleaseDate().toString() : (new Date()),
+                this.getAuthor() != null ? this.getAuthor().getId() : 0);
     }
     
     /**

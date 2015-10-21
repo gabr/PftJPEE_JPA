@@ -143,6 +143,8 @@ public class DatabaseManager<T> {
      */
     public List<T> getAll(Class<T> objectClass) throws IllegalArgumentException, QueryTimeoutException, TransactionRequiredException, PessimisticLockException, LockTimeoutException, PersistenceException {
         String namedQuery = objectClass.getName() + ".findAll";
+        String[] split = namedQuery.split("\\.");
+        namedQuery = split[split.length - 2] + "." + split[split.length -1];
         Query query = entityManager.createNamedQuery(namedQuery);
         return query.getResultList();
     }
@@ -160,6 +162,7 @@ public class DatabaseManager<T> {
      * @throws PersistenceException if the query execution exceeds the query timeout value set and the transaction is rolled back
      */
     public <Author> List<Author> getByName(String name) throws IllegalArgumentException, QueryTimeoutException, TransactionRequiredException, PessimisticLockException, LockTimeoutException, PersistenceException {
+        name = name.replace("\"", "").trim();   
         Query query = entityManager.createNamedQuery("Author.findByName");
         query.setParameter("name", name);
         return query.getResultList();
@@ -178,6 +181,7 @@ public class DatabaseManager<T> {
      * @throws PersistenceException if the query execution exceeds the query timeout value set and the transaction is rolled back
      */
     public <Book> List<Book> getByTitle(String title) throws IllegalArgumentException, QueryTimeoutException, TransactionRequiredException, PessimisticLockException, LockTimeoutException, PersistenceException {
+        title = title.replace("\"", "").trim();
         Query query = entityManager.createNamedQuery("Book.findByTitle");
         query.setParameter("title", title);
         return query.getResultList();

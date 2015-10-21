@@ -292,7 +292,7 @@ public class View {
     }
 
     /**
-     * 
+     * Persists new entity specified in parameters
      * @param selected the given parameters
      * @return the error code
      */
@@ -305,7 +305,7 @@ public class View {
         }
         
         try {
-            String entity = values.get(0).toLowerCase();
+            String entity = values.get(0).toLowerCase().trim();
             Long id = Long.parseLong(values.get(1));
         } catch (NumberFormatException nfe) {
             return ERROR_CODE_OPTION_ERROR;
@@ -322,7 +322,7 @@ public class View {
     }
 
     /**
-     * 
+     * Finds entities that match with specified parameters
      * @param selected the given parameters
      * @return the error code
      */
@@ -335,15 +335,59 @@ public class View {
         }
         
         try {
-            String entity = values.get(0).toLowerCase();
-            Long id = Long.parseLong(values.get(1));
-        } catch (NumberFormatException nfe) {
-            return ERROR_CODE_OPTION_ERROR;
+            String entity = values.get(0).toLowerCase().trim();
+            String pattern = values.get(1).toLowerCase().trim();
+            
+            switch (entity) {
+                case "author":
+                    DatabaseManager<Author> authorManager = new DatabaseManager<Author>();
+                    
+                    List<Author> authors;
+                    if (pattern.equals("all")) {
+                        authors = authorManager.getAll(Author.class);
+                    } else {
+                        authors = authorManager.getByName(pattern);
+                    }
+                    
+                    if (authors != null) {
+                        for (Author a: authors) {
+                            System.out.println(a.toString());
+                        }
+                    }
+                    
+                    authorManager.close();
+                    break;
+                    
+                case "book":
+                    DatabaseManager<Book> bookManager = new DatabaseManager<Book>();
+                    
+                    List<Book> books;
+                    if (pattern.equals("all")) {
+                        books = bookManager.getAll(Book.class);
+                    } else {
+                        books = bookManager.getByTitle(pattern);
+                    }
+                    
+                    if (books != null) {
+                        for (Book a: books) {
+                            System.out.println(a.toString());
+                        }
+                    }
+                    
+                    bookManager.close();
+                    break;
+                    
+                default:
+                    System.out.println("Wrong entity name!\n");
+                    System.out.println(HELP_REMOVE);
+
+                    return ERROR_CODE_OPTION_ERROR;
+            }
         } catch (Exception ex) {
             System.out.println("Unknown error!\n");
             System.out.println(ex.toString());
             System.out.println();
-            System.out.println(HELP_REMOVE);
+            System.out.println(HELP_FIND);
             
             return ERROR_CODE_UNKNOWN_ERROR;
         }
@@ -352,7 +396,7 @@ public class View {
     }
 
     /**
-     * 
+     * Merges entity specified in parameters
      * @param selected the given parameters
      * @return the error code
      */
@@ -365,7 +409,7 @@ public class View {
         }
         
         try {
-            String entity = values.get(0).toLowerCase();
+            String entity = values.get(0).toLowerCase().trim();
             Long id = Long.parseLong(values.get(1));
             
             switch(entity) {
@@ -375,8 +419,8 @@ public class View {
                         return ERROR_CODE_OPTION_ERROR;
                     }
                     
-                    String name = values.get(2);
-                    String lastName = values.get(3);
+                    String name = values.get(2).trim();
+                    String lastName = values.get(3).trim();
                     
                     DatabaseManager<Author> authorManager = new DatabaseManager<Author>();
                     authorManager.startTransaction();
@@ -408,7 +452,7 @@ public class View {
                         return ERROR_CODE_OPTION_ERROR;
                     }
                     
-                    String title = values.get(1);
+                    String title = values.get(1).trim();
                     Long pages = 0L;
                     Date date;
                     Long authorId = 0L;
@@ -487,7 +531,7 @@ public class View {
             System.out.println("Unknown error!\n");
             System.out.println(ex.toString());
             System.out.println();
-            System.out.println(HELP_REMOVE);
+            System.out.println(HELP_MERGE);
             
             return ERROR_CODE_UNKNOWN_ERROR;
         }
@@ -496,7 +540,7 @@ public class View {
     }
 
     /**
-     * 
+     * Removes entity specified in parameters
      * @param selected the given parameters
      * @return the error code
      */
@@ -509,7 +553,7 @@ public class View {
         }
         
         try {
-            String entity = values.get(0).toLowerCase();
+            String entity = values.get(0).toLowerCase().trim();
             Long id = Long.parseLong(values.get(1));
             
             switch (entity) {
