@@ -73,6 +73,9 @@ public class View {
             + "    java -jar Lab1-JPA.jar -p Author Stephen King\n"
             + "    java -jar Lab1-JPA.jar -persist Book \"The Waste Lands\" 1991 1\n";
     
+    /**
+     * Help message for find option
+     */
     private final String HELP_FIND = "find\n"
             + "usage:\n"
             + "       find Author All|<Name>\n"
