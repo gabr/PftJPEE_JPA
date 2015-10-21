@@ -47,17 +47,17 @@ public class View {
             + "    java -jar Lab1-JPA.jar -h f\n"
             + "    java -jar Lab1-JPA.jar -h find\n";
     
-    /**
-     * Help message for interactive option
-     */
-    private final String HELP_INTERACTIVE = "interactive\n"
-            + "usage: interactive\n"
-            + "\n"
-            + "Starts interactive console interface.\n"
-            + "\n"
-            + "Examples:\n"
-            + "    java -jar Lab1-JPA.jar -i\n"
-            + "    java -jar Lab1-JPA.jar -interactive\n";
+//    /**
+//     * Help message for interactive option
+//     */
+//    private final String HELP_INTERACTIVE = "interactive\n"
+//            + "usage: interactive\n"
+//            + "\n"
+//            + "Starts interactive console interface.\n"
+//            + "\n"
+//            + "Examples:\n"
+//            + "    java -jar Lab1-JPA.jar -i\n"
+//            + "    java -jar Lab1-JPA.jar -interactive\n";
     
     /**
      * Help message for persist option
@@ -135,10 +135,10 @@ public class View {
                 .desc("prints this help or option help")
                 .build());
         
-        interactiveHelpCRUD.addOption(Option.builder("i")
-                .longOpt("interactive")
-                .desc("interactive mode")
-                .build());
+//        interactiveHelpCRUD.addOption(Option.builder("i")
+//                .longOpt("interactive")
+//                .desc("interactive mode")
+//                .build());
         
         interactiveHelpCRUD.addOption(Option.builder("p")
                 .longOpt("persist")
@@ -206,9 +206,9 @@ public class View {
             case "h":
                 errorCode = help(selected);
                 break;
-            case "i":
-                System.out.println("i");
-                break;
+//            case "i":
+//                System.out.println("i");
+//                break;
             case "p":
                 System.out.println("p");
                 break;
@@ -251,10 +251,10 @@ public class View {
                     System.out.println(HELP_HELP);
                     break;
                     
-                case "i":
-                case "interactive":
-                    System.out.println(HELP_INTERACTIVE);
-                    break;
+//                case "i":
+//                case "interactive":
+//                    System.out.println(HELP_INTERACTIVE);
+//                    break;
                     
                 case "p":
                 case "persist":
