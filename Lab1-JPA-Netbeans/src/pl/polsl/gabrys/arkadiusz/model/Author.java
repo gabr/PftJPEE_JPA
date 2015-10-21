@@ -77,8 +77,8 @@ public class Author implements Serializable {
      * @param books the author books list
      */
     public Author(String name, String lastName, List<Book> books) {
-        this.name = name;
-        this.lastName = lastName;
+        this.name = name == null ? "" : name;
+        this.lastName = lastName == null ? "" : lastName;
         
         if (books == null) {
             this.books = new ArrayList<Book>();

@@ -151,6 +151,7 @@ public class View {
                 .hasArgs()
                 .argName("args")
                 .numberOfArgs(4)
+                .optionalArg(true)
                 .desc("persists new entity")
                 .build());
         
@@ -306,14 +307,103 @@ public class View {
         
         try {
             String entity = values.get(0).toLowerCase().trim();
-            Long id = Long.parseLong(values.get(1));
-        } catch (NumberFormatException nfe) {
-            return ERROR_CODE_OPTION_ERROR;
+            
+            switch(entity) {
+                case "author":
+                    if (values.size() < 3) {
+                        System.out.println(HELP_PERSIST);
+                        return ERROR_CODE_OPTION_ERROR;
+                    }
+                    
+                    String name = values.get(1).trim();
+                    String lastName = values.get(2).trim();
+                    
+                    DatabaseManager<Author> authorManager = new DatabaseManager<Author>();
+                    authorManager.startTransaction();
+                    
+                    Author newAuthor = new Author(name, lastName);
+                    if (!authorManager.persist(newAuthor)) {
+                        authorManager.close();
+                        System.out.println("Author addition failed!");
+                        return ERROR_CODE_OPTION_ERROR;
+                    }
+                    
+                    authorManager.commitTransaction();
+                    authorManager.close();
+                    
+                    break;
+                    
+                case "book":
+                    if (values.size() < 5) {
+                        System.out.println(HELP_PERSIST);
+                        return ERROR_CODE_OPTION_ERROR;
+                    }
+                    
+                    String title = values.get(1).trim();
+                    Long pages = 0L;
+                    Date date;
+                    Long authorId = 0L;
+                    
+                    try {
+                        pages = Long.parseLong(values.get(2));
+                    } catch (Exception ex) {
+                        System.out.println("Wrong nuber of pages parameter!\n");
+                        System.out.println(HELP_PERSIST);
+                        return ERROR_CODE_OPTION_ERROR;
+                    }
+                   
+                    try {
+                        date = new Date(Date.parse(values.get(3)));
+                    } catch (Exception ex) {
+                        System.out.println("Wrong date format!\n");
+                        System.out.println(HELP_PERSIST);
+                        return ERROR_CODE_OPTION_ERROR;
+                    }
+                    
+                    try {
+                        authorId = Long.parseLong(values.get(4));
+                    } catch (Exception ex) {
+                        System.out.println("Wrong author id!\n");
+                        System.out.println(HELP_PERSIST);
+                        return ERROR_CODE_OPTION_ERROR;
+                    }
+                    
+                    DatabaseManager<Book> bookManager = new DatabaseManager<Book>();
+                    bookManager.startTransaction();
+                    
+                    authorManager = new DatabaseManager<Author>();
+                    Author authorToMerge = authorManager.find(Author.class, authorId);
+                    
+                    if (authorToMerge == null) {
+                        authorManager.close();
+                        System.out.println("Author with given Id: " + authorId + " couldn't be found in database!");
+                        return ERROR_CODE_OPTION_ERROR;
+                    }
+                    
+                    Book newBook = new Book(title, pages, date, authorToMerge);
+                    if (!bookManager.persist(newBook)) {
+                        authorManager.close();
+                        bookManager.close();
+                        System.out.println("Book addition failed!");
+                        return ERROR_CODE_OPTION_ERROR;
+                    }
+                    
+                    bookManager.commitTransaction();
+                    authorManager.close();
+                    bookManager.close();
+                    break;
+                    
+                default:
+                    System.out.println("Wrong entity name!\n");
+                    System.out.println(HELP_PERSIST);
+
+                    return ERROR_CODE_OPTION_ERROR;
+            }
         } catch (Exception ex) {
             System.out.println("Unknown error!\n");
             System.out.println(ex.toString());
             System.out.println();
-            System.out.println(HELP_REMOVE);
+            System.out.println(HELP_PERSIST);
             
             return ERROR_CODE_UNKNOWN_ERROR;
         }
@@ -379,7 +469,7 @@ public class View {
                     
                 default:
                     System.out.println("Wrong entity name!\n");
-                    System.out.println(HELP_REMOVE);
+                    System.out.println(HELP_FIND);
 
                     return ERROR_CODE_OPTION_ERROR;
             }
@@ -452,13 +542,13 @@ public class View {
                         return ERROR_CODE_OPTION_ERROR;
                     }
                     
-                    String title = values.get(1).trim();
+                    String title = values.get(2).trim();
                     Long pages = 0L;
                     Date date;
                     Long authorId = 0L;
                     
                     try {
-                        pages = Long.parseLong(values.get(2));
+                        pages = Long.parseLong(values.get(3));
                     } catch (Exception ex) {
                         System.out.println("Wrong nuber of pages parameter!\n");
                         System.out.println(HELP_MERGE);
@@ -466,7 +556,7 @@ public class View {
                     }
                    
                     try {
-                        date = new Date(Date.parse(values.get(3)));
+                        date = new Date(Date.parse(values.get(4)));
                     } catch (Exception ex) {
                         System.out.println("Wrong date format!\n");
                         System.out.println(HELP_MERGE);
@@ -474,7 +564,7 @@ public class View {
                     }
                     
                     try {
-                        authorId = Long.parseLong(values.get(4));
+                        authorId = Long.parseLong(values.get(5));
                     } catch (Exception ex) {
                         System.out.println("Wrong author id!\n");
                         System.out.println(HELP_MERGE);

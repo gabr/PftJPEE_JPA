@@ -85,7 +85,7 @@ public class Book implements Serializable {
      * @param releaseDate the book release date
      */
     public Book(String title, Date releaseDate) {
-        this(title, releaseDate, null);
+        this(title, 0L, releaseDate, null);
     }
     
     /**
@@ -94,10 +94,26 @@ public class Book implements Serializable {
      * @param releaseDate the book release date
      * @param author the book author
      */
-    public Book(String title, Date releaseDate, Author author) {
+    public Book(String title, Long pages, Date releaseDate, Author author) {
         if (title == null) {
-            // TODO:
+            this.title = "";
+        } else {
+            this.title = title;
         }
+        
+        if (pages == null) {
+            this.pages = 0L;
+        } else {
+            this.pages = pages;
+        }
+        
+        if (releaseDate == null) {
+            this.releaseDate = new Date();
+        } else {
+            this.releaseDate = releaseDate;
+        }
+        
+        this.author = author;
     }
 
     public Long getId() {
