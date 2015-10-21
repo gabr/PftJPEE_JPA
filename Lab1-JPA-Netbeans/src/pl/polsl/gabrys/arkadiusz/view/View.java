@@ -228,16 +228,16 @@ public class View {
 //                System.out.println("i");
 //                break;
             case "p":
-                System.out.println("p");
+                errorCode = persist(selected);
                 break;
             case "f":
-                System.out.println("f");
+                errorCode = find(selected);
                 break;
             case "m":
-                System.out.println("m");
+                errorCode = merge(selected);
                 break;
             case "r":
-                System.out.println("r");
+                errorCode = remove(selected);
                 break;
         }
         
@@ -302,6 +302,42 @@ public class View {
             
             return ERROR_CODE_OK;
         }
+    }
+
+    /**
+     * 
+     * @param selected the given parameters
+     * @return the error code
+     */
+    private Integer persist(Option selected) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    /**
+     * 
+     * @param selected the given parameters
+     * @return the error code
+     */
+    private Integer find(Option selected) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    /**
+     * 
+     * @param selected the given parameters
+     * @return the error code
+     */
+    private Integer merge(Option selected) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    /**
+     * 
+     * @param selected the given parameters
+     * @return the error code
+     */
+    private Integer remove(Option selected) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
 }
