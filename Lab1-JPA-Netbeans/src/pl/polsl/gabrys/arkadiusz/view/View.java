@@ -48,6 +48,18 @@ public class View {
             + "    java -jar Lab1-JPA.jar -h find\n";
     
     /**
+     * Help message for interactive option
+     */
+    private final String HELP_INTERACTIVE ="interactive\n"
+            + "usage: interactive\n"
+            + "\n"
+            + "Starts interactive console interface.\n"
+            + "\n"
+            + "Example:\n"
+            + "    java -jar Lab1-JPA.jar -i\n"
+            + "    java -jar Lab1-JPA.jar -interactive\n";
+    
+    /**
      * Options structure for parsing
      */
     private Options options;
@@ -186,6 +198,7 @@ public class View {
                     
                 case "i":
                 case "interactive":
+                    System.out.println(HELP_INTERACTIVE);
                     break;
                     
                 case "p":
