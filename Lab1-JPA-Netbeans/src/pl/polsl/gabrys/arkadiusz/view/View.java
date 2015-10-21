@@ -1,5 +1,6 @@
 package pl.polsl.gabrys.arkadiusz.view;
 
+import java.util.List;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -119,28 +120,14 @@ public class View {
             + "    java -jar Lab1-JPA.jar -remove 2\n";
     
     /**
-     * Database manager for author entities
-     */
-    DatabaseManager<Author> authorManager;
-    
-    /**
-     * Database manager for book entities
-     */
-    DatabaseManager<Book> bookManager;
-    
-    /**
      * Options structure for parsing
      */
     private Options options;
 
     /**
-     * Creates options structure for parsing and database managers
+     * Creates options structure for parsing
      */
     public View() {
-        // create database managers
-        authorManager = new DatabaseManager<Author>();
-        bookManager = new DatabaseManager<Book>();
-        
         // create options structure
         options = new Options();
         OptionGroup interactiveHelpCRUD = new OptionGroup();
@@ -310,7 +297,23 @@ public class View {
      * @return the error code
      */
     private Integer persist(Option selected) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        List<String> values = selected.getValuesList();
+        
+        if (values.size() < 2) {
+            System.out.println(HELP_PERSIST);
+            return ERROR_CODE_OPTION_ERROR;
+        }
+        
+        try {
+            String entity = values.get(0).toLowerCase();
+            Integer id = Integer.parseInt(values.get(1));
+        } catch (NumberFormatException nfe) {
+            return ERROR_CODE_OPTION_ERROR;
+        } catch (Exception ex) {
+            return ERROR_CODE_UNKNOWN_ERROR;
+        }
+        
+        return ERROR_CODE_OK;
     }
 
     /**
@@ -319,7 +322,23 @@ public class View {
      * @return the error code
      */
     private Integer find(Option selected) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        List<String> values = selected.getValuesList();
+        
+        if (values.size() < 2) {
+            System.out.println(HELP_FIND);
+            return ERROR_CODE_OPTION_ERROR;
+        }
+        
+        try {
+            String entity = values.get(0).toLowerCase();
+            Integer id = Integer.parseInt(values.get(1));
+        } catch (NumberFormatException nfe) {
+            return ERROR_CODE_OPTION_ERROR;
+        } catch (Exception ex) {
+            return ERROR_CODE_UNKNOWN_ERROR;
+        }
+        
+        return ERROR_CODE_OK;
     }
 
     /**
@@ -328,7 +347,23 @@ public class View {
      * @return the error code
      */
     private Integer merge(Option selected) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        List<String> values = selected.getValuesList();
+        
+        if (values.size() < 2) {
+            System.out.println(HELP_MERGE);
+            return ERROR_CODE_OPTION_ERROR;
+        }
+        
+        try {
+            String entity = values.get(0).toLowerCase();
+            Integer id = Integer.parseInt(values.get(1));
+        } catch (NumberFormatException nfe) {
+            return ERROR_CODE_OPTION_ERROR;
+        } catch (Exception ex) {
+            return ERROR_CODE_UNKNOWN_ERROR;
+        }
+        
+        return ERROR_CODE_OK;
     }
 
     /**
@@ -337,7 +372,61 @@ public class View {
      * @return the error code
      */
     private Integer remove(Option selected) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        List<String> values = selected.getValuesList();
+        
+        if (values.size() < 2) {
+            System.out.println(HELP_REMOVE);
+            return ERROR_CODE_OPTION_ERROR;
+        }
+        
+        try {
+            String entity = values.get(0).toLowerCase();
+            Long id = Long.parseLong(values.get(1));
+            
+            switch (entity)
+            {
+                case "author":
+                    DatabaseManager<Author> authorManager = new DatabaseManager<Author>();
+                    authorManager.startTransaction();
+                    Author authorToRemove = authorManager.find(Author.class, id);
+                    
+                    if (authorToRemove == null) {
+                        authorManager.close();
+                        System.out.println("Author with given Id: " + id + " couldn't be found in database!");
+                        return ERROR_CODE_OPTION_ERROR;
+                    }
+                    
+                    if (!authorManager.remove(authorToRemove)) {
+                        authorManager.close();
+                        System.out.println("Error while removing " + authorToRemove.toString());
+                        return ERROR_CODE_UNKNOWN_ERROR;
+                    }
+                    
+                    authorManager.commitTransaction();
+                    break;
+                    
+                case "book":
+                    break;
+                    
+                default:
+                    System.out.println("Wrong entity name!\n");
+                    System.out.println(HELP_REMOVE);
+
+                    return ERROR_CODE_OPTION_ERROR;
+            }
+        } catch (NumberFormatException nfe) {
+            System.out.println("Wrong Id!\n");
+            System.out.println(HELP_REMOVE);
+            
+            return ERROR_CODE_OPTION_ERROR;
+        } catch (Exception ex) {
+            System.out.println("Unknown error!\n");
+            System.out.println(HELP_REMOVE);
+            
+            return ERROR_CODE_UNKNOWN_ERROR;
+        }
+        
+        return ERROR_CODE_OK;
     }
     
 }

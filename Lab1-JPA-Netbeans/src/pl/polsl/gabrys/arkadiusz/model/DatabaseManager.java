@@ -74,7 +74,7 @@ public class DatabaseManager<T> {
      * @return the entity with given id
      * @throws IllegalArgumentException if the first argument does not denote an entity type or the second argument is is null
      */
-    public T find(Class<T> objectClass, Integer tId) throws IllegalArgumentException {
+    public T find(Class<T> objectClass, Long tId) throws IllegalArgumentException {
         if (tId == null) {
             return null;
         }
