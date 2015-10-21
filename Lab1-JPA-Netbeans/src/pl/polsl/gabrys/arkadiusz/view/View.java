@@ -8,6 +8,9 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import pl.polsl.gabrys.arkadiusz.model.Author;
+import pl.polsl.gabrys.arkadiusz.model.Book;
+import pl.polsl.gabrys.arkadiusz.model.DatabaseManager;
 
 /**
  * Class provides CLI and interactive console interface
@@ -114,15 +117,30 @@ public class View {
             + "Examples:\n"
             + "    java -jar Lab1-JPA.jar -r 1\n"
             + "    java -jar Lab1-JPA.jar -remove 2\n";
+    
+    /**
+     * Database manager for author entities
+     */
+    DatabaseManager<Author> authorManager;
+    
+    /**
+     * Database manager for book entities
+     */
+    DatabaseManager<Book> bookManager;
+    
     /**
      * Options structure for parsing
      */
     private Options options;
 
     /**
-     * Creates options structure for parsing
+     * Creates options structure for parsing and database managers
      */
     public View() {
+        // create database managers
+        authorManager = new DatabaseManager<Author>();
+        bookManager = new DatabaseManager<Book>();
+        
         // create options structure
         options = new Options();
         OptionGroup interactiveHelpCRUD = new OptionGroup();
