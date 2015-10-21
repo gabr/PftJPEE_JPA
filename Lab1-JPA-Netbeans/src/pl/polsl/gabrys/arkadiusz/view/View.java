@@ -73,6 +73,17 @@ public class View {
             + "    java -jar Lab1-JPA.jar -p Author Stephen King\n"
             + "    java -jar Lab1-JPA.jar -persist Book \"The Waste Lands\" 1991 1\n";
     
+    private final String HELP_FIND = "find\n"
+            + "usage:\n"
+            + "       find Author All|<Name>\n"
+            + "       find Book   All|<Title>\n"
+            + "\n"
+            + "Finds all entities or entities with given value.\n"
+            + "\n"
+            + "Examples:\n"
+            + "    java -jar Lab1-JPA.jar -f Author Stephen\n"
+            + "    java -jar Lab1-JPA.jar -find Book All\n";
+    
     /**
      * Options structure for parsing
      */
@@ -222,6 +233,7 @@ public class View {
                     
                 case "f":
                 case "find":
+                    System.out.println(HELP_FIND);
                     break;
                     
                 case "m":
