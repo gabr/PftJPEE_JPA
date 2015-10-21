@@ -10,6 +10,7 @@
       <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver"/>
       <property name="javax.persistence.jdbc.password" value="db_pass"/>
       <property name="javax.persistence.schema-generation.database.action" value="create"/>
+      <property name="eclipselink.logging.level" value="OFF"/>
     </properties>
   </persistence-unit>
 </persistence>

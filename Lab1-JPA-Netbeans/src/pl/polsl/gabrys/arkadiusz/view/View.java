@@ -310,6 +310,11 @@ public class View {
         } catch (NumberFormatException nfe) {
             return ERROR_CODE_OPTION_ERROR;
         } catch (Exception ex) {
+            System.out.println("Unknown error!\n");
+            System.out.println(ex.toString());
+            System.out.println();
+            System.out.println(HELP_REMOVE);
+            
             return ERROR_CODE_UNKNOWN_ERROR;
         }
         
@@ -335,6 +340,11 @@ public class View {
         } catch (NumberFormatException nfe) {
             return ERROR_CODE_OPTION_ERROR;
         } catch (Exception ex) {
+            System.out.println("Unknown error!\n");
+            System.out.println(ex.toString());
+            System.out.println();
+            System.out.println(HELP_REMOVE);
+            
             return ERROR_CODE_UNKNOWN_ERROR;
         }
         
@@ -360,6 +370,11 @@ public class View {
         } catch (NumberFormatException nfe) {
             return ERROR_CODE_OPTION_ERROR;
         } catch (Exception ex) {
+            System.out.println("Unknown error!\n");
+            System.out.println(ex.toString());
+            System.out.println();
+            System.out.println(HELP_REMOVE);
+            
             return ERROR_CODE_UNKNOWN_ERROR;
         }
         
@@ -403,6 +418,7 @@ public class View {
                     }
                     
                     authorManager.commitTransaction();
+                    authorManager.close();
                     break;
                     
                 case "book":
@@ -421,6 +437,8 @@ public class View {
             return ERROR_CODE_OPTION_ERROR;
         } catch (Exception ex) {
             System.out.println("Unknown error!\n");
+            System.out.println(ex.toString());
+            System.out.println();
             System.out.println(HELP_REMOVE);
             
             return ERROR_CODE_UNKNOWN_ERROR;
