@@ -422,6 +422,24 @@ public class View {
                     break;
                     
                 case "book":
+                    DatabaseManager<Book> bookManager = new DatabaseManager<Book>();
+                    bookManager.startTransaction();
+                    Book bookToRemove = bookManager.find(Book.class, id);
+                    
+                    if (bookToRemove == null) {
+                        bookManager.close();
+                        System.out.println("Book with given Id: " + id + " couldn't be found in database!");
+                        return ERROR_CODE_OPTION_ERROR;
+                    }
+                    
+                    if (!bookManager.remove(bookToRemove)) {
+                        bookManager.close();
+                        System.out.println("Error while removing " + bookToRemove.toString());
+                        return ERROR_CODE_UNKNOWN_ERROR;
+                    }
+                    
+                    bookManager.commitTransaction();
+                    bookManager.close();
                     break;
                     
                 default:
