@@ -127,6 +127,14 @@ public class Book implements Serializable {
     public void setReleaseDate(Date releaseDate) {
         this.releaseDate = releaseDate;
     }
+
+    public Author getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(Author author) {
+        this.author = author;
+    }
     
     /**
      * Compares current object with the given one

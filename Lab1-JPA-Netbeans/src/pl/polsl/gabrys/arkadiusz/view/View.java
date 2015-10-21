@@ -1,5 +1,6 @@
 package pl.polsl.gabrys.arkadiusz.view;
 
+import java.util.Date;
 import java.util.List;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -69,13 +70,13 @@ public class View {
     private final String HELP_PERSIST = "persist\n"
             + "usage:\n"
             + "       persist Author <Name> <LastName>\n"
-            + "       persist Book   <Title> <Date> <AuthorId>\n"
+            + "       persist Book   <Title> <Pages> <Date> <AuthorId>\n"
             + "\n"
             + "Adds new Author or Book entity to the database.\n"
             + "\n"
             + "Examples:\n"
             + "    java -jar Lab1-JPA.jar -p Author Stephen King\n"
-            + "    java -jar Lab1-JPA.jar -persist Book \"The Waste Lands\" 1991 1\n";
+            + "    java -jar Lab1-JPA.jar -persist Book \"The Waste Lands\" 351 \"1991.01.23\" 1\n";
     
     /**
      * Help message for find option
@@ -97,13 +98,13 @@ public class View {
     private final String HELP_MERGE = "merge\n"
             + "usage:\n"
             + "       merge Author <Id> <Name> <LastName>\n"
-            + "       merge Book   <Id> <Title> <Date> <AuthorId>\n"
+            + "       merge Book   <Id> <Title> <Pages> <Date> <AuthorId>\n"
             + "\n"
             + "Changes values for entity with given id.\n"
             + "\n"
             + "Examples:\n"
             + "    java -jar Lab1-JPA.jar -m 1 Author Stephen King\n"
-            + "    java -jar Lab1-JPA.jar -merge 2 Book \"Drawing of the Three\" 1987 1\n";
+            + "    java -jar Lab1-JPA.jar -merge 2 Book \"Drawing of the Three\" 284 \"1987.03.13\" 1\n";
     
     /**
      * Help message for remove option
@@ -166,6 +167,7 @@ public class View {
                 .hasArgs()
                 .argName("args")
                 .numberOfArgs(5)
+                .optionalArg(true)
                 .desc("merges entity")
                 .build());
         
@@ -206,8 +208,7 @@ public class View {
         // only one option can be passed
         Option selected = commandLine.getOptions()[0];
         
-        switch (selected.getOpt())
-        {
+        switch (selected.getOpt()) {
             case "h":
                 errorCode = help(selected);
                 break;
@@ -249,8 +250,7 @@ public class View {
             return ERROR_CODE_OK;
         } else {
             
-            switch(value)
-            {
+            switch(value) {
                 case "h":
                 case "help":
                     System.out.println(HELP_HELP);
@@ -306,7 +306,7 @@ public class View {
         
         try {
             String entity = values.get(0).toLowerCase();
-            Integer id = Integer.parseInt(values.get(1));
+            Long id = Long.parseLong(values.get(1));
         } catch (NumberFormatException nfe) {
             return ERROR_CODE_OPTION_ERROR;
         } catch (Exception ex) {
@@ -336,7 +336,7 @@ public class View {
         
         try {
             String entity = values.get(0).toLowerCase();
-            Integer id = Integer.parseInt(values.get(1));
+            Long id = Long.parseLong(values.get(1));
         } catch (NumberFormatException nfe) {
             return ERROR_CODE_OPTION_ERROR;
         } catch (Exception ex) {
@@ -366,8 +366,122 @@ public class View {
         
         try {
             String entity = values.get(0).toLowerCase();
-            Integer id = Integer.parseInt(values.get(1));
+            Long id = Long.parseLong(values.get(1));
+            
+            switch(entity) {
+                case "author":
+                    if (values.size() < 4) {
+                        System.out.println(HELP_MERGE);
+                        return ERROR_CODE_OPTION_ERROR;
+                    }
+                    
+                    String name = values.get(2);
+                    String lastName = values.get(3);
+                    
+                    DatabaseManager<Author> authorManager = new DatabaseManager<Author>();
+                    authorManager.startTransaction();
+                    Author authorToMerge = authorManager.find(Author.class, id);
+                    
+                    if (authorToMerge == null) {
+                        authorManager.close();
+                        System.out.println("Author with given Id: " + id + " couldn't be found in database!");
+                        return ERROR_CODE_OPTION_ERROR;
+                    }
+                    
+                    authorToMerge.setName(name);
+                    authorToMerge.setLastName(lastName);
+                    
+                    if (authorManager.merge(authorToMerge) == null) {
+                        authorManager.close();
+                        System.out.println("Error while merging " + authorToMerge.toString());
+                        return ERROR_CODE_UNKNOWN_ERROR;
+                    }
+                    
+                    authorManager.commitTransaction();
+                    authorManager.close();
+                    
+                    break;
+                    
+                case "book":
+                    if (values.size() < 6) {
+                        System.out.println(HELP_MERGE);
+                        return ERROR_CODE_OPTION_ERROR;
+                    }
+                    
+                    String title = values.get(1);
+                    Long pages = 0L;
+                    Date date;
+                    Long authorId = 0L;
+                    
+                    try {
+                        pages = Long.parseLong(values.get(2));
+                    } catch (Exception ex) {
+                        System.out.println("Wrong nuber of pages parameter!\n");
+                        System.out.println(HELP_MERGE);
+                        return ERROR_CODE_OPTION_ERROR;
+                    }
+                   
+                    try {
+                        date = new Date(Date.parse(values.get(3)));
+                    } catch (Exception ex) {
+                        System.out.println("Wrong date format!\n");
+                        System.out.println(HELP_MERGE);
+                        return ERROR_CODE_OPTION_ERROR;
+                    }
+                    
+                    try {
+                        authorId = Long.parseLong(values.get(4));
+                    } catch (Exception ex) {
+                        System.out.println("Wrong author id!\n");
+                        System.out.println(HELP_MERGE);
+                        return ERROR_CODE_OPTION_ERROR;
+                    }
+                    
+                    DatabaseManager<Book> bookManager = new DatabaseManager<Book>();
+                    bookManager.startTransaction();
+                    Book bookToMerge = bookManager.find(Book.class, id);
+                    
+                    if (bookToMerge == null) {
+                        bookManager.close();
+                        System.out.println("Book with given Id: " + id + " couldn't be found in database!");
+                        return ERROR_CODE_OPTION_ERROR;
+                    }
+                    
+                    authorManager = new DatabaseManager<Author>();
+                    authorToMerge = authorManager.find(Author.class, authorId);
+                    
+                    if (authorToMerge == null) {
+                        authorManager.close();
+                        System.out.println("Author with given Id: " + authorId + " couldn't be found in database!");
+                        return ERROR_CODE_OPTION_ERROR;
+                    }
+                    
+                    bookToMerge.setTitle(title);
+                    bookToMerge.setPages(pages);
+                    bookToMerge.setReleaseDate(date);
+                    bookToMerge.setAuthor(authorToMerge);
+                    
+                    if (bookManager.merge(bookToMerge) == null) {
+                        bookManager.close();
+                        System.out.println("Error while merging " + bookToMerge.toString());
+                        return ERROR_CODE_UNKNOWN_ERROR;
+                    }
+                    
+                    bookManager.commitTransaction();
+                    authorManager.close();
+                    bookManager.close();
+                    break;
+                    
+                default:
+                    System.out.println("Wrong entity name!\n");
+                    System.out.println(HELP_MERGE);
+
+                    return ERROR_CODE_OPTION_ERROR;
+            }
         } catch (NumberFormatException nfe) {
+            System.out.println("Wrong Id!\n");
+            System.out.println(HELP_MERGE);
+            
             return ERROR_CODE_OPTION_ERROR;
         } catch (Exception ex) {
             System.out.println("Unknown error!\n");
@@ -398,8 +512,7 @@ public class View {
             String entity = values.get(0).toLowerCase();
             Long id = Long.parseLong(values.get(1));
             
-            switch (entity)
-            {
+            switch (entity) {
                 case "author":
                     DatabaseManager<Author> authorManager = new DatabaseManager<Author>();
                     authorManager.startTransaction();
