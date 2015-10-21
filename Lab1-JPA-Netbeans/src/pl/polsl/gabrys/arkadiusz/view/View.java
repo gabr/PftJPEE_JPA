@@ -50,14 +50,28 @@ public class View {
     /**
      * Help message for interactive option
      */
-    private final String HELP_INTERACTIVE ="interactive\n"
+    private final String HELP_INTERACTIVE = "interactive\n"
             + "usage: interactive\n"
             + "\n"
             + "Starts interactive console interface.\n"
             + "\n"
-            + "Example:\n"
+            + "Examples:\n"
             + "    java -jar Lab1-JPA.jar -i\n"
             + "    java -jar Lab1-JPA.jar -interactive\n";
+    
+    /**
+     * Help message for persist option
+     */
+    private final String HELP_PERSIST = "persist\n"
+            + "usage:\n"
+            + "       persist Author <Name> <LastName>\n"
+            + "       persist Book   <Title> <Date> <AuthorId>\n"
+            + "\n"
+            + "Adds new Author or Book entity to the database.\n"
+            + "\n"
+            + "Examples:\n"
+            + "    java -jar Lab1-JPA.jar -p Author Stephen King\n"
+            + "    java -jar Lab1-JPA.jar -persist Book \"The Waste Lands\" 1991 1\n";
     
     /**
      * Options structure for parsing
@@ -203,6 +217,7 @@ public class View {
                     
                 case "p":
                 case "persist":
+                    System.out.println(HELP_PERSIST);
                     break;
                     
                 case "f":
@@ -218,6 +233,8 @@ public class View {
                     break;
                     
                 default:
+                    System.out.println("UNKNOWN OPTION!\n");
+                    System.out.println(HELP_HELP);
                     return ERROR_CODE_OPTION_ERROR;
             }
             
