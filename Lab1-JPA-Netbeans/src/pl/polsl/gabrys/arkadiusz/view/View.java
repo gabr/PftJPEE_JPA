@@ -1,5 +1,9 @@
 package pl.polsl.gabrys.arkadiusz.view;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 import org.apache.commons.cli.CommandLine;
@@ -150,7 +154,7 @@ public class View {
                 .longOpt("persist")
                 .hasArgs()
                 .argName("args")
-                .numberOfArgs(4)
+                .numberOfArgs(5)
                 .optionalArg(true)
                 .desc("persists new entity")
                 .build());
@@ -323,14 +327,11 @@ public class View {
                     
                     Author newAuthor = new Author(name, lastName);
                     if (!authorManager.persist(newAuthor)) {
-                        authorManager.close();
                         System.out.println("Author addition failed!");
                         return ERROR_CODE_OPTION_ERROR;
                     }
                     
-                    authorManager.commitTransaction();
-                    authorManager.close();
-                    
+                    authorManager.commitTransaction();                    
                     break;
                     
                 case "book":
@@ -353,7 +354,8 @@ public class View {
                     }
                    
                     try {
-                        date = new Date(Date.parse(values.get(3)));
+                        DateFormat df = new SimpleDateFormat("yyyy.MM.dd");
+                        date = df.parse(values.get(3));
                     } catch (Exception ex) {
                         System.out.println("Wrong date format!\n");
                         System.out.println(HELP_PERSIST);
@@ -375,22 +377,17 @@ public class View {
                     Author authorToMerge = authorManager.find(Author.class, authorId);
                     
                     if (authorToMerge == null) {
-                        authorManager.close();
                         System.out.println("Author with given Id: " + authorId + " couldn't be found in database!");
                         return ERROR_CODE_OPTION_ERROR;
                     }
                     
                     Book newBook = new Book(title, pages, date, authorToMerge);
                     if (!bookManager.persist(newBook)) {
-                        authorManager.close();
-                        bookManager.close();
                         System.out.println("Book addition failed!");
                         return ERROR_CODE_OPTION_ERROR;
                     }
                     
                     bookManager.commitTransaction();
-                    authorManager.close();
-                    bookManager.close();
                     break;
                     
                 default:
@@ -445,7 +442,6 @@ public class View {
                         }
                     }
                     
-                    authorManager.close();
                     break;
                     
                 case "book":
@@ -464,7 +460,6 @@ public class View {
                         }
                     }
                     
-                    bookManager.close();
                     break;
                     
                 default:
@@ -517,7 +512,6 @@ public class View {
                     Author authorToMerge = authorManager.find(Author.class, id);
                     
                     if (authorToMerge == null) {
-                        authorManager.close();
                         System.out.println("Author with given Id: " + id + " couldn't be found in database!");
                         return ERROR_CODE_OPTION_ERROR;
                     }
@@ -526,14 +520,11 @@ public class View {
                     authorToMerge.setLastName(lastName);
                     
                     if (authorManager.merge(authorToMerge) == null) {
-                        authorManager.close();
                         System.out.println("Error while merging " + authorToMerge.toString());
                         return ERROR_CODE_UNKNOWN_ERROR;
                     }
                     
                     authorManager.commitTransaction();
-                    authorManager.close();
-                    
                     break;
                     
                 case "book":
@@ -556,7 +547,8 @@ public class View {
                     }
                    
                     try {
-                        date = new Date(Date.parse(values.get(4)));
+                        DateFormat df = new SimpleDateFormat("yyyy.MM.dd");
+                        date = df.parse(values.get(3));
                     } catch (Exception ex) {
                         System.out.println("Wrong date format!\n");
                         System.out.println(HELP_MERGE);
@@ -576,7 +568,6 @@ public class View {
                     Book bookToMerge = bookManager.find(Book.class, id);
                     
                     if (bookToMerge == null) {
-                        bookManager.close();
                         System.out.println("Book with given Id: " + id + " couldn't be found in database!");
                         return ERROR_CODE_OPTION_ERROR;
                     }
@@ -585,7 +576,6 @@ public class View {
                     authorToMerge = authorManager.find(Author.class, authorId);
                     
                     if (authorToMerge == null) {
-                        authorManager.close();
                         System.out.println("Author with given Id: " + authorId + " couldn't be found in database!");
                         return ERROR_CODE_OPTION_ERROR;
                     }
@@ -596,14 +586,11 @@ public class View {
                     bookToMerge.setAuthor(authorToMerge);
                     
                     if (bookManager.merge(bookToMerge) == null) {
-                        bookManager.close();
                         System.out.println("Error while merging " + bookToMerge.toString());
                         return ERROR_CODE_UNKNOWN_ERROR;
                     }
                     
                     bookManager.commitTransaction();
-                    authorManager.close();
-                    bookManager.close();
                     break;
                     
                 default:
@@ -653,19 +640,16 @@ public class View {
                     Author authorToRemove = authorManager.find(Author.class, id);
                     
                     if (authorToRemove == null) {
-                        authorManager.close();
                         System.out.println("Author with given Id: " + id + " couldn't be found in database!");
                         return ERROR_CODE_OPTION_ERROR;
                     }
                     
                     if (!authorManager.remove(authorToRemove)) {
-                        authorManager.close();
                         System.out.println("Error while removing " + authorToRemove.toString());
                         return ERROR_CODE_UNKNOWN_ERROR;
                     }
                     
                     authorManager.commitTransaction();
-                    authorManager.close();
                     break;
                     
                 case "book":
@@ -674,19 +658,16 @@ public class View {
                     Book bookToRemove = bookManager.find(Book.class, id);
                     
                     if (bookToRemove == null) {
-                        bookManager.close();
                         System.out.println("Book with given Id: " + id + " couldn't be found in database!");
                         return ERROR_CODE_OPTION_ERROR;
                     }
                     
                     if (!bookManager.remove(bookToRemove)) {
-                        bookManager.close();
                         System.out.println("Error while removing " + bookToRemove.toString());
                         return ERROR_CODE_UNKNOWN_ERROR;
                     }
                     
                     bookManager.commitTransaction();
-                    bookManager.close();
                     break;
                     
                 default:

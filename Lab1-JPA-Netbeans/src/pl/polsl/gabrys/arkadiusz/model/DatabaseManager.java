@@ -28,7 +28,7 @@ public class DatabaseManager<T> {
     /**
      * Entity manager instance
      */
-    private EntityManager entityManager;
+    private static EntityManager entityManager;
     
     /**
      * Class constructor
@@ -36,9 +36,12 @@ public class DatabaseManager<T> {
      * saved in const PERSISTANCE_UNIT_NAME.
      */
     public DatabaseManager() {
-        EntityManagerFactory emf = Persistence
-                .createEntityManagerFactory(PERSISTANCE_UNIT_NAME);
-        entityManager = emf.createEntityManager();
+        if (entityManager == null)
+        {
+            EntityManagerFactory emf = Persistence
+                    .createEntityManagerFactory(PERSISTANCE_UNIT_NAME);
+            entityManager = emf.createEntityManager();
+        }
     }
     
     /**
@@ -57,14 +60,6 @@ public class DatabaseManager<T> {
     public void commitTransaction() throws TransactionRequiredException, PersistenceException {
         entityManager.flush();
         entityManager.getTransaction().commit();
-    }
-    
-    /**
-     * Closes entity manager
-     * @throws IllegalStateException if the entity manager is container-managed
-     */
-    public void close() throws IllegalStateException {
-        entityManager.close();
     }
     
     /**

@@ -61,7 +61,7 @@ public class Book implements Serializable {
      * Author of the book
      */
     @JoinColumn(nullable = false)
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.PERSIST)
     private Author author;
 
     /**
