@@ -91,6 +91,7 @@ public class Book implements Serializable {
     /**
      * Initializes instance with given parameter
      * @param title the book title
+     * @param pages the number of pages
      * @param releaseDate the book release date
      * @param author the book author
      */

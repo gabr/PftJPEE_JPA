@@ -190,6 +190,7 @@ public class View {
 
     /**
      * Decides about action based on given arguments
+     * @param args the command line arguments
      * @return the error code
      */
     public Integer manageUserInput(String[] args) {
