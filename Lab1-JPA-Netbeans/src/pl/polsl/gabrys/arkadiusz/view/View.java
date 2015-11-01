@@ -307,7 +307,6 @@ public class View {
             return ERROR_CODE_OPTION_ERROR;
         }
         
-        try {
             String entity = values.get(0).toLowerCase().trim();
             
             switch(entity) {
@@ -361,9 +360,14 @@ public class View {
                         return ERROR_CODE_OPTION_ERROR;
                     }
                     
-                    db.startTransaction();                    
-                    db.persistBook(title, pages, date, authorId);
-                    db.commitTransaction();
+                    try {
+                        db.startTransaction();                    
+                        db.persistBook(title, pages, date, authorId);
+                        db.commitTransaction();
+                    } catch (IllegalArgumentException ex) {
+                        System.out.println(ex.getMessage());
+                        return ERROR_CODE_OPTION_ERROR;
+                    }
                     break;
                     
                 default:
@@ -372,15 +376,7 @@ public class View {
 
                     return ERROR_CODE_OPTION_ERROR;
             }
-        } catch (Exception ex) {
-            System.out.println("Unknown error!\n");
-            System.out.println(ex.toString());
-            System.out.println();
-            System.out.println(HELP_PERSIST);
             
-            return ERROR_CODE_UNKNOWN_ERROR;
-        }
-        
         return ERROR_CODE_OK;
     }
 
@@ -398,50 +394,41 @@ public class View {
             return ERROR_CODE_OPTION_ERROR;
         }
         
-        try {
-            String entity = values.get(0).toLowerCase().trim();
-            String pattern = values.get(1).toLowerCase().trim();
-            
-            switch (entity) {
-                case "author":               
-                    
-                    if (pattern.equals("all")) {
-                        for (Object o: db.findAllAuthors()) {
-                            System.out.println(o.toString());
-                        }
-                    } else {
-                        for (Object o: db.findAuthorsByName(pattern)) {
-                            System.out.println(o.toString());
-                        }
-                    }
-                    
-                    break;
-                    
-                case "book":               
-                    if (pattern.equals("all")) {
-                        for (Object o: db.findAllBooks()) {
-                            System.out.println(o.toString());
-                        }
-                    } else {
-                        for (Object o: db.findBooksByTitle(pattern)) {
-                            System.out.println(o.toString());
-                        }
-                    }                    
-                    break;
-                    
-                default:
-                    System.out.println("Wrong entity name!\n");
-                    System.out.println(HELP_FIND);
+        String entity = values.get(0).toLowerCase().trim();
+        String pattern = values.get(1).toLowerCase().trim();
 
-                    return ERROR_CODE_OPTION_ERROR;
-            }
-        } catch (Exception ex) {
-            System.out.println("Unknown error!\n");
-            System.out.println(ex.toString());
-            System.out.println();
-            System.out.println(HELP_FIND);
-            
-            return ERROR_CODE_UNKNOWN_ERROR;
+        switch (entity) {
+            case "author":               
+
+                if (pattern.equals("all")) {
+                    for (Object o: db.findAllAuthors()) {
+                        System.out.println(o.toString());
+                    }
+                } else {
+                    for (Object o: db.findAuthorsByName(pattern)) {
+                        System.out.println(o.toString());
+                    }
+                }
+
+                break;
+
+            case "book":               
+                if (pattern.equals("all")) {
+                    for (Object o: db.findAllBooks()) {
+                        System.out.println(o.toString());
+                    }
+                } else {
+                    for (Object o: db.findBooksByTitle(pattern)) {
+                        System.out.println(o.toString());
+                    }
+                }                    
+                break;
+
+            default:
+                System.out.println("Wrong entity name!\n");
+                System.out.println(HELP_FIND);
+
+                return ERROR_CODE_OPTION_ERROR;
         }
         
         return ERROR_CODE_OK;
@@ -453,6 +440,9 @@ public class View {
      * @return the error code
      */
     private Integer merge(Option selected) {
+        String entity = null;
+        Long id = null;
+        
         DatabaseManager db = new DatabaseManager();
         List<String> values = selected.getValuesList();
         
@@ -462,83 +452,84 @@ public class View {
         }
         
         try {
-            String entity = values.get(0).toLowerCase().trim();
-            Long id = Long.parseLong(values.get(1));
-            
-            switch(entity) {
-                case "author":
-                    if (values.size() < 4) {
-                        System.out.println(HELP_MERGE);
-                        return ERROR_CODE_OPTION_ERROR;
-                    }
-                    
-                    String name = values.get(2).trim();
-                    String lastName = values.get(3).trim();
-                    
+            entity = values.get(0).toLowerCase().trim();
+            id = Long.parseLong(values.get(1));
+        } catch (NumberFormatException ex) {
+            System.out.println("Id parameter is not an integer number!\n");
+            return ERROR_CODE_OPTION_ERROR;
+        }
+
+        switch(entity) {
+            case "author":
+                if (values.size() < 4) {
+                    System.out.println(HELP_MERGE);
+                    return ERROR_CODE_OPTION_ERROR;
+                }
+
+                String name = values.get(2).trim();
+                String lastName = values.get(3).trim();
+
+                try {
                     db.startTransaction();
                     db.mergeAuthor(id, name, lastName);
                     db.commitTransaction();
-                    break;
-                    
-                case "book":
-                    if (values.size() < 6) {
-                        System.out.println(HELP_MERGE);
-                        return ERROR_CODE_OPTION_ERROR;
-                    }
-                    
-                    String title = values.get(2).trim();
-                    Long pages = 0L;
-                    Date date;
-                    Long authorId = 0L;
-                    
-                    try {
-                        pages = Long.parseLong(values.get(3));
-                    } catch (Exception ex) {
-                        System.out.println("Wrong nuber of pages parameter!\n");
-                        System.out.println(HELP_MERGE);
-                        return ERROR_CODE_OPTION_ERROR;
-                    }
-                   
-                    try {
-                        DateFormat df = new SimpleDateFormat("yyyy.MM.dd");
-                        date = df.parse(values.get(3));
-                    } catch (Exception ex) {
-                        System.out.println("Wrong date format!\n");
-                        System.out.println(HELP_MERGE);
-                        return ERROR_CODE_OPTION_ERROR;
-                    }
-                    
-                    try {
-                        authorId = Long.parseLong(values.get(5));
-                    } catch (Exception ex) {
-                        System.out.println("Wrong author id!\n");
-                        System.out.println(HELP_MERGE);
-                        return ERROR_CODE_OPTION_ERROR;
-                    }
-                    
+                } catch (IllegalArgumentException ex) {
+                    System.out.println(ex.getMessage());
+                    return ERROR_CODE_OPTION_ERROR;
+                }
+                break;
+
+            case "book":
+                if (values.size() < 6) {
+                    System.out.println(HELP_MERGE);
+                    return ERROR_CODE_OPTION_ERROR;
+                }
+
+                String title = values.get(2).trim();
+                Long pages = 0L;
+                Date date;
+                Long authorId = 0L;
+
+                try {
+                    pages = Long.parseLong(values.get(3));
+                } catch (Exception ex) {
+                    System.out.println("Wrong nuber of pages parameter!\n");
+                    System.out.println(HELP_MERGE);
+                    return ERROR_CODE_OPTION_ERROR;
+                }
+
+                try {
+                    DateFormat df = new SimpleDateFormat("yyyy.MM.dd");
+                    date = df.parse(values.get(3));
+                } catch (Exception ex) {
+                    System.out.println("Wrong date format!\n");
+                    System.out.println(HELP_MERGE);
+                    return ERROR_CODE_OPTION_ERROR;
+                }
+
+                try {
+                    authorId = Long.parseLong(values.get(5));
+                } catch (Exception ex) {
+                    System.out.println("Author id is not an integer number!\n");
+                    System.out.println(HELP_MERGE);
+                    return ERROR_CODE_OPTION_ERROR;
+                }
+
+                try {
                     db.startTransaction();
                     db.mergeBook(id, title, pages, date, authorId);
                     db.commitTransaction();
-                    break;
-                    
-                default:
-                    System.out.println("Wrong entity name!\n");
-                    System.out.println(HELP_MERGE);
-
+                } catch (IllegalArgumentException ex) {
+                    System.out.println(ex.getMessage());
                     return ERROR_CODE_OPTION_ERROR;
-            }
-        } catch (NumberFormatException nfe) {
-            System.out.println("Wrong Id!\n");
-            System.out.println(HELP_MERGE);
-            
-            return ERROR_CODE_OPTION_ERROR;
-        } catch (Exception ex) {
-            System.out.println("Unknown error!\n");
-            System.out.println(ex.toString());
-            System.out.println();
-            System.out.println(HELP_MERGE);
-            
-            return ERROR_CODE_UNKNOWN_ERROR;
+                }
+                break;
+
+            default:
+                System.out.println("Wrong entity name!\n");
+                System.out.println(HELP_MERGE);
+
+                return ERROR_CODE_OPTION_ERROR;
         }
         
         return ERROR_CODE_OK;
@@ -550,6 +541,9 @@ public class View {
      * @return the error code
      */
     private Integer remove(Option selected) {
+        String entity = null;
+        Long id = null;
+        
         DatabaseManager db = new DatabaseManager();
         List<String> values = selected.getValuesList();
         
@@ -559,40 +553,41 @@ public class View {
         }
         
         try {
-            String entity = values.get(0).toLowerCase().trim();
-            Long id = Long.parseLong(values.get(1));
-            
-            switch (entity) {
-                case "author":
+            entity = values.get(0).toLowerCase().trim();
+            id = Long.parseLong(values.get(1));
+        } catch (NumberFormatException ex) {
+            System.out.println("Id parameter is not an integer number!\n");
+            return ERROR_CODE_OPTION_ERROR;
+        }
+
+        switch (entity) {
+            case "author":
+                try {
                     db.startTransaction();
                     db.removeAuthor(id);
                     db.commitTransaction();
-                    break;
-                    
-                case "book":
+                } catch (IllegalArgumentException ex) {
+                    System.out.println(ex.getMessage());
+                    return ERROR_CODE_OPTION_ERROR;
+                }
+                break;
+
+            case "book":
+                try {
                     db.startTransaction();
                     db.removeBook(id);
                     db.commitTransaction();
-                    break;
-                    
-                default:
-                    System.out.println("Wrong entity name!\n");
-                    System.out.println(HELP_REMOVE);
-
+                } catch (IllegalArgumentException ex) {
+                    System.out.println(ex.getMessage());
                     return ERROR_CODE_OPTION_ERROR;
-            }
-        } catch (NumberFormatException nfe) {
-            System.out.println("Wrong Id!\n");
-            System.out.println(HELP_REMOVE);
-            
-            return ERROR_CODE_OPTION_ERROR;
-        } catch (Exception ex) {
-            System.out.println("Unknown error!\n");
-            System.out.println(ex.toString());
-            System.out.println();
-            System.out.println(HELP_REMOVE);
-            
-            return ERROR_CODE_UNKNOWN_ERROR;
+                }
+                break;
+
+            default:
+                System.out.println("Wrong entity name!\n");
+                System.out.println(HELP_REMOVE);
+
+                return ERROR_CODE_OPTION_ERROR;
         }
         
         return ERROR_CODE_OK;

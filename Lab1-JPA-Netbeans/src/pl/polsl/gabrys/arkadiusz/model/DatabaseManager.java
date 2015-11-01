@@ -158,11 +158,16 @@ public class DatabaseManager{
      * @param pages the number of book pages
      * @param releaseDate the book release date
      * @param authorId the book author id
-     * @throws IllegalArgumentException if the author id is null
+     * @throws IllegalArgumentException if the author id is null or if the author doesn't exists
      * @throws TransactionRequiredException if invoked on a container-managed entity manager of type PersistenceContextType.TRANSACTION and there is no transaction
      */
     public void persistBook(String title, Long pages, Date releaseDate, Long authorId) throws IllegalArgumentException, TransactionRequiredException {
         Author author = findAuthorById(authorId);
+        
+        if (author == null) {
+            throw new IllegalArgumentException("Author with id: " + authorId + " doesn't exists");
+        }
+        
         Book entity = new Book(title, pages, releaseDate, author);
         persist(entity);
     }
@@ -172,7 +177,7 @@ public class DatabaseManager{
      * @param id the author id
      * @param name the new author name
      * @param lastName the new author last name
-     * @throws IllegalArgumentException if the author is a removed entity or if the id is null
+     * @throws IllegalArgumentException if the author is a removed entity or if the id is null or the given author doesn't exists
      * @throws TransactionRequiredException if invoked on a container-managed entity manager of type PersistenceContextType.TRANSACTION and there is no transactio
      */
     public void mergeAuthor(Long id, String name, String lastName) throws IllegalArgumentException, TransactionRequiredException {
