@@ -93,7 +93,7 @@ public class DatabaseManager{
      * @throws LockTimeoutException if pessimistic locking fails and only the statement is rolled back
      * @throws PersistenceException if the query execution exceeds the query timeout value set and the transaction is rolled back
      */
-    private List<Author> findAuthorsByName(String name) throws IllegalArgumentException, QueryTimeoutException, TransactionRequiredException, PessimisticLockException, LockTimeoutException, PersistenceException {
+    public List<Author> findAuthorsByName(String name) throws IllegalArgumentException, QueryTimeoutException, TransactionRequiredException, PessimisticLockException, LockTimeoutException, PersistenceException {
         name = name.replace("\"", "").trim();
         Query query = entityManager.createNamedQuery("Author.findByName");
         query.setParameter("name", name);
@@ -134,7 +134,7 @@ public class DatabaseManager{
      * @throws LockTimeoutException if pessimistic locking fails and only the statement is rolled back
      * @throws PersistenceException if the query execution exceeds the query timeout value set and the transaction is rolled back
      */
-    private List<Book> getByTitle(String title) throws IllegalArgumentException, QueryTimeoutException, TransactionRequiredException, PessimisticLockException, LockTimeoutException, PersistenceException {
+    public List<Book> findBooksByTitle(String title) throws IllegalArgumentException, QueryTimeoutException, TransactionRequiredException, PessimisticLockException, LockTimeoutException, PersistenceException {
         title = title.replace("\"", "").trim();
         Query query = entityManager.createNamedQuery("Book.findByTitle");
         query.setParameter("title", title);
