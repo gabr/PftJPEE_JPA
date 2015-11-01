@@ -2,8 +2,6 @@ package pl.polsl.gabrys.arkadiusz.view;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 import org.apache.commons.cli.CommandLine;
@@ -14,8 +12,6 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import pl.polsl.gabrys.arkadiusz.model.Author;
-import pl.polsl.gabrys.arkadiusz.model.Book;
 import pl.polsl.gabrys.arkadiusz.model.DatabaseManager;
 
 /**
@@ -303,6 +299,7 @@ public class View {
      * @return the error code
      */
     private Integer persist(Option selected) {
+        DatabaseManager db = new DatabaseManager();
         List<String> values = selected.getValuesList();
         
         if (values.size() < 2) {
@@ -323,16 +320,9 @@ public class View {
                     String name = values.get(1).trim();
                     String lastName = values.get(2).trim();
                     
-                    DatabaseManager<Author> authorManager = new DatabaseManager<Author>();
-                    authorManager.startTransaction();
-                    
-                    Author newAuthor = new Author(name, lastName);
-                    if (!authorManager.persist(newAuthor)) {
-                        System.out.println("Author addition failed!");
-                        return ERROR_CODE_OPTION_ERROR;
-                    }
-                    
-                    authorManager.commitTransaction();                    
+                    db.startTransaction();
+                    db.persistAuthor(name, lastName);
+                    db.commitTransaction();                    
                     break;
                     
                 case "book":
@@ -371,24 +361,9 @@ public class View {
                         return ERROR_CODE_OPTION_ERROR;
                     }
                     
-                    DatabaseManager<Book> bookManager = new DatabaseManager<Book>();
-                    bookManager.startTransaction();
-                    
-                    authorManager = new DatabaseManager<Author>();
-                    Author authorToMerge = authorManager.find(Author.class, authorId);
-                    
-                    if (authorToMerge == null) {
-                        System.out.println("Author with given Id: " + authorId + " couldn't be found in database!");
-                        return ERROR_CODE_OPTION_ERROR;
-                    }
-                    
-                    Book newBook = new Book(title, pages, date, authorToMerge);
-                    if (!bookManager.persist(newBook)) {
-                        System.out.println("Book addition failed!");
-                        return ERROR_CODE_OPTION_ERROR;
-                    }
-                    
-                    bookManager.commitTransaction();
+                    db.startTransaction();                    
+                    db.persistBook(title, pages, date, authorId);
+                    db.commitTransaction();
                     break;
                     
                 default:
@@ -415,6 +390,7 @@ public class View {
      * @return the error code
      */
     private Integer find(Option selected) {
+        DatabaseManager db = new DatabaseManager();
         List<String> values = selected.getValuesList();
         
         if (values.size() < 2) {
@@ -427,40 +403,30 @@ public class View {
             String pattern = values.get(1).toLowerCase().trim();
             
             switch (entity) {
-                case "author":
-                    DatabaseManager<Author> authorManager = new DatabaseManager<Author>();
+                case "author":               
                     
-                    List<Author> authors;
                     if (pattern.equals("all")) {
-                        authors = authorManager.getAll(Author.class);
+                        for (Object o: db.findAllAuthors()) {
+                            System.out.println(o.toString());
+                        }
                     } else {
-                        authors = authorManager.getByName(pattern);
-                    }
-                    
-                    if (authors != null) {
-                        for (Author a: authors) {
-                            System.out.println(a.toString());
+                        for (Object o: db.findAuthorsByName(pattern)) {
+                            System.out.println(o.toString());
                         }
                     }
                     
                     break;
                     
-                case "book":
-                    DatabaseManager<Book> bookManager = new DatabaseManager<Book>();
-                    
-                    List<Book> books;
+                case "book":               
                     if (pattern.equals("all")) {
-                        books = bookManager.getAll(Book.class);
-                    } else {
-                        books = bookManager.getByTitle(pattern);
-                    }
-                    
-                    if (books != null) {
-                        for (Book a: books) {
-                            System.out.println(a.toString());
+                        for (Object o: db.findAllBooks()) {
+                            System.out.println(o.toString());
                         }
-                    }
-                    
+                    } else {
+                        for (Object o: db.findBooksByTitle(pattern)) {
+                            System.out.println(o.toString());
+                        }
+                    }                    
                     break;
                     
                 default:
@@ -487,6 +453,7 @@ public class View {
      * @return the error code
      */
     private Integer merge(Option selected) {
+        DatabaseManager db = new DatabaseManager();
         List<String> values = selected.getValuesList();
         
         if (values.size() < 2) {
@@ -508,24 +475,9 @@ public class View {
                     String name = values.get(2).trim();
                     String lastName = values.get(3).trim();
                     
-                    DatabaseManager<Author> authorManager = new DatabaseManager<Author>();
-                    authorManager.startTransaction();
-                    Author authorToMerge = authorManager.find(Author.class, id);
-                    
-                    if (authorToMerge == null) {
-                        System.out.println("Author with given Id: " + id + " couldn't be found in database!");
-                        return ERROR_CODE_OPTION_ERROR;
-                    }
-                    
-                    authorToMerge.setName(name);
-                    authorToMerge.setLastName(lastName);
-                    
-                    if (authorManager.merge(authorToMerge) == null) {
-                        System.out.println("Error while merging " + authorToMerge.toString());
-                        return ERROR_CODE_UNKNOWN_ERROR;
-                    }
-                    
-                    authorManager.commitTransaction();
+                    db.startTransaction();
+                    db.mergeAuthor(id, name, lastName);
+                    db.commitTransaction();
                     break;
                     
                 case "book":
@@ -564,34 +516,9 @@ public class View {
                         return ERROR_CODE_OPTION_ERROR;
                     }
                     
-                    DatabaseManager<Book> bookManager = new DatabaseManager<Book>();
-                    bookManager.startTransaction();
-                    Book bookToMerge = bookManager.find(Book.class, id);
-                    
-                    if (bookToMerge == null) {
-                        System.out.println("Book with given Id: " + id + " couldn't be found in database!");
-                        return ERROR_CODE_OPTION_ERROR;
-                    }
-                    
-                    authorManager = new DatabaseManager<Author>();
-                    authorToMerge = authorManager.find(Author.class, authorId);
-                    
-                    if (authorToMerge == null) {
-                        System.out.println("Author with given Id: " + authorId + " couldn't be found in database!");
-                        return ERROR_CODE_OPTION_ERROR;
-                    }
-                    
-                    bookToMerge.setTitle(title);
-                    bookToMerge.setPages(pages);
-                    bookToMerge.setReleaseDate(date);
-                    bookToMerge.setAuthor(authorToMerge);
-                    
-                    if (bookManager.merge(bookToMerge) == null) {
-                        System.out.println("Error while merging " + bookToMerge.toString());
-                        return ERROR_CODE_UNKNOWN_ERROR;
-                    }
-                    
-                    bookManager.commitTransaction();
+                    db.startTransaction();
+                    db.mergeBook(id, title, pages, date, authorId);
+                    db.commitTransaction();
                     break;
                     
                 default:
@@ -623,6 +550,7 @@ public class View {
      * @return the error code
      */
     private Integer remove(Option selected) {
+        DatabaseManager db = new DatabaseManager();
         List<String> values = selected.getValuesList();
         
         if (values.size() < 2) {
@@ -636,39 +564,15 @@ public class View {
             
             switch (entity) {
                 case "author":
-                    DatabaseManager<Author> authorManager = new DatabaseManager<Author>();
-                    authorManager.startTransaction();
-                    Author authorToRemove = authorManager.find(Author.class, id);
-                    
-                    if (authorToRemove == null) {
-                        System.out.println("Author with given Id: " + id + " couldn't be found in database!");
-                        return ERROR_CODE_OPTION_ERROR;
-                    }
-                    
-                    if (!authorManager.remove(authorToRemove)) {
-                        System.out.println("Error while removing " + authorToRemove.toString());
-                        return ERROR_CODE_UNKNOWN_ERROR;
-                    }
-                    
-                    authorManager.commitTransaction();
+                    db.startTransaction();
+                    db.removeAuthor(id);
+                    db.commitTransaction();
                     break;
                     
                 case "book":
-                    DatabaseManager<Book> bookManager = new DatabaseManager<Book>();
-                    bookManager.startTransaction();
-                    Book bookToRemove = bookManager.find(Book.class, id);
-                    
-                    if (bookToRemove == null) {
-                        System.out.println("Book with given Id: " + id + " couldn't be found in database!");
-                        return ERROR_CODE_OPTION_ERROR;
-                    }
-                    
-                    if (!bookManager.remove(bookToRemove)) {
-                        System.out.println("Error while removing " + bookToRemove.toString());
-                        return ERROR_CODE_UNKNOWN_ERROR;
-                    }
-                    
-                    bookManager.commitTransaction();
+                    db.startTransaction();
+                    db.removeBook(id);
+                    db.commitTransaction();
                     break;
                     
                 default:
