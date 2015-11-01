@@ -190,8 +190,10 @@ public class DatabaseManager{
     /**
      * Updates given Book entity
      * @param id the book id
-     * @param name the new book name
-     * @param lastName the new book last name
+     * @param title the new book title
+     * @param pages the new number of pages
+     * @param releaseDate the new release date
+     * @param authorId the id of the new author
      * @throws IllegalArgumentException if the book is a removed entity or if the id is null
      * @throws TransactionRequiredException if invoked on a container-managed entity manager of type PersistenceContextType.TRANSACTION and there is no transactio
      */

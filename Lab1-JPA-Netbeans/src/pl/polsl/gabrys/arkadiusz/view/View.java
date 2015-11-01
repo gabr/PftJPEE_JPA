@@ -83,13 +83,17 @@ public class View {
      */
     private final String HELP_FIND = "find\n"
             + "usage:\n"
-            + "       find Author All|<Name>\n"
-            + "       find Book   All|<Title>\n"
+            + "       find Author All\n"
+            + "       find Author Id <id>\n"
+            + "       find Author Name <name>\n"
+            + "       find Book   All\n"
+            + "       find Book   Id <id>\n"
+            + "       find Book   Title <title>\n"
             + "\n"
             + "Finds all entities or entities with given value.\n"
             + "\n"
             + "Examples:\n"
-            + "    java -jar Lab1-JPA.jar -f Author Stephen\n"
+            + "    java -jar Lab1-JPA.jar -f Author Name Stephen\n"
             + "    java -jar Lab1-JPA.jar -find Book All\n";
     
     /**
@@ -123,7 +127,7 @@ public class View {
     /**
      * Options structure for parsing
      */
-    private Options options;
+    private final Options options;
 
     /**
      * Creates options structure for parsing
@@ -159,7 +163,8 @@ public class View {
                 .longOpt("find")
                 .hasArgs()
                 .argName("args")
-                .numberOfArgs(2)
+                .numberOfArgs(3)
+                .optionalArg(true)
                 .desc("finds entities")
                 .build());
         
@@ -395,33 +400,83 @@ public class View {
         }
         
         String entity = values.get(0).toLowerCase().trim();
-        String pattern = values.get(1).toLowerCase().trim();
+        String key = values.get(1).toLowerCase().trim();
 
         switch (entity) {
             case "author":               
 
-                if (pattern.equals("all")) {
+                if (key.equals("all")) {
                     for (Object o: db.findAllAuthors()) {
                         System.out.println(o.toString());
                     }
-                } else {
+                } else if (key.equals("id")) {
+                    Long id = null;
+                    
+                    try {
+                        id = Long.parseLong(values.get(2));
+                    } catch (Exception ex) {
+                        System.out.println("Given id is not an integer number!\n");                        
+                        return ERROR_CODE_OPTION_ERROR;
+                    }
+                    
+                    Object o = db.findAuthorById(id);
+                    
+                    if (o != null) {
+                        System.out.println(o.toString());
+                    } else {
+                        System.out.println("No author with given id found.\n");
+                    }
+                    
+                } else if (key.equals("name")) {
+                    String pattern = values.get(2).trim();
+                    
                     for (Object o: db.findAuthorsByName(pattern)) {
                         System.out.println(o.toString());
                     }
+                } else {
+                    System.out.println("Wrong search option!\n");
+                    System.out.println(HELP_FIND);
+                    
+                    return ERROR_CODE_OPTION_ERROR;
                 }
-
+                
                 break;
 
             case "book":               
-                if (pattern.equals("all")) {
+                if (key.equals("all")) {
                     for (Object o: db.findAllBooks()) {
                         System.out.println(o.toString());
                     }
-                } else {
+                } else if (key.equals("id")) {
+                    Long id = null;
+                    
+                    try {
+                        id = Long.parseLong(values.get(2));
+                    } catch (Exception ex) {
+                        System.out.println("Given id is not an integer number!\n");                        
+                        return ERROR_CODE_OPTION_ERROR;
+                    }
+                    
+                    Object o = db.findBookById(id);
+                    
+                    if (o != null) {
+                        System.out.println(o.toString());
+                    } else {
+                        System.out.println("No book with given id found.\n");
+                    }
+                    
+                } else if (key.equals("title")) {
+                    String pattern = values.get(2).trim();
+                    
                     for (Object o: db.findBooksByTitle(pattern)) {
                         System.out.println(o.toString());
                     }
-                }                    
+                } else {
+                    System.out.println("Wrong search option!\n");
+                    System.out.println(HELP_FIND);
+                    
+                    return ERROR_CODE_OPTION_ERROR;
+                }
                 break;
 
             default:
